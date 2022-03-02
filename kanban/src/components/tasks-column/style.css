@@ -1,0 +1,5 @@
+
+/* sentencias que ayudara a que el formulario a parezca o desaparesca segun se necesite */
+.task__form--hidden{
+    display: none;
+}
