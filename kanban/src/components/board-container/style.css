@@ -1,0 +1,11 @@
+
+.columns__container{
+    display: flex;
+    justify-content: space-around;
+
+}
+
+    .column__container{
+        border: 1px solid black;
+
+    }
