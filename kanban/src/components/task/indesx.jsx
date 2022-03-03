@@ -1,6 +1,10 @@
 // Estilo de un unico componente task
 
 import { useState } from "react"
+import './style.css';
+import DeleteIcon from '@mui/icons-material/Delete';
+import PendingOutlinedIcon from '@mui/icons-material/PendingOutlined';
+import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
 
 // Este componente task esta siendo utilizado en el ul del componente tasks-column
 
@@ -22,24 +26,40 @@ export default function Task(props){
 
     return(
 
-        // Una task contiene lo siguiente 
-                <div>
-                    {/* Contiene un icono en funcion del estatus en el que esta */}
-                    <i> { props.status === 'Done' ? 'Rojo' : 'Verde' } </i>
+        // Una task contiene lo siguiente
+                <div className="task">
 
-                    {/* Nombre de la tarea */}
-                    <p> { props.info.name } </p>
+                        <div className="status-container">
+                                <div className="icon-status-container">
+                                    { 
+                                        props.status === 'DONE' ? 
+                                                <CheckCircleOutlineOutlinedIcon sx={{ color: 'red',  fontSize:'14px'}}/> :
+                                                <PendingOutlinedIcon sx={{ color: 'green',  fontSize:'15px'}}></PendingOutlinedIcon>
+                                    }
+                
+                                </div>     
 
-                    {/* Icono de borrar */}
-                    {/* <i onClick={ () => console.log('borrar') }>Papelera</i> */}
-                    <i onClick={ () => selectTaskForDelete(idTask) }>Papelera</i>
+                                <div className="text-date-container">
+                                        {/* Nombre de la tarea */}
+                                        <div className="text"> { props.info.name } </div>
+                                        <div className="date" > #{props.info.id} created on {props.info.creationDate.toLocaleString()} </div>
+                                </div>
+                        </div>
 
-                    {/* Un p que contiene "el id" , "create on" "fecha"*/}
-                    <p> #{props.info.id} created on {props.info.creationDate.toLocaleString()} </p>
-                    {console.log('id: '+ idTask)}
+                        <div className="borrar-container">
+                                {/* Icono de borrar */}
+                                {/* <i onClick={ () => console.log('borrar') }>Papelera</i> */}
+                                <DeleteIcon sx={{ color: '#636468',  fontSize:'18px'}} onClick={ () => selectTaskForDelete(idTask) } />
+                        </div>
+
+
+
+
+                        
+                        
                 </div>
 
-
+        
 
         // el status y la info se definen en el padre que es el componente task-column
     )

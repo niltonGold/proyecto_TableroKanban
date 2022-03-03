@@ -147,8 +147,6 @@ export default function BoardContainer(){
 
 
 
-// formtato de fecha
-
 
 
 
@@ -187,16 +185,17 @@ export default function BoardContainer(){
                     {/* En el input voy a definir una funcion filterTask para realizar el filtro de tasks */}
                     {/* <input onChange={filterTask} type="text" placeholder="busca por aqui"></input> */}
 
-                    <Paper component="form" sx={{ height:'25px' , p: '1px 2px', display: 'flex', alignItems: 'center', width: 300 }}  >
+                    <Paper component="form" sx={{ height:'25px' , p: '1px 2px', display: 'flex', alignItems: 'center', width:'40vw'  }}  >
                             
 
                         {/* <IconButton sx={{ p: '10px' }} aria-label="menu">
                             <MenuIcon />
                         </IconButton> */}
 
-                        <IconButton type="submit" sx={{ p: '10px' }} aria-label="search">
-                            <SearchIcon />
-                        </IconButton>
+                        {/* <IconButton type="submit" sx={{ p: '10px' }} aria-label="search"> */}
+                        {/* <IconButton  sx={{ p: '10px' }}> */}
+                            <SearchIcon sx={{ pl:'3px'}}/>
+                        {/* </IconButton> */}
 
                         <InputBase onChange={filterTask}  sx={{ ml: 1, flex: 1 }}  placeholder="Filter cards"  inputProps={{ 'aria-label': 'search google maps' }} />
                         
@@ -206,7 +205,7 @@ export default function BoardContainer(){
                         </IconButton> */}
 
 
-                        <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
+                        {/* <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" /> */}
 
 
                         {/* <IconButton color="primary" sx={{ p: '10px' }} aria-label="directions">

@@ -17,15 +17,22 @@ export default function TaskColumn(props){
     const [ buttonAddEnable, updateButtonAddEnable ] = useState(false);
 
 
+    const [ botonMas, upDateBotonMas ] = useState(true);
+
+
+
+    const [ botonAdd, upDateBotonAdd ] = useState(false);
+
+
     // Funcion del submit del formulario
-    const handleSubmit = e => {
+    const handleSubmit = (e) => {
 
         // Sirve para evitar que la pantalla se refresque
         e.preventDefault(); 
 
         // Debo obtener el valor de la task
         const taskName = e.target.taskName.value;
-
+        console.log(taskName);
         // Llamo al evento onTaskCreation
         // Hace falta una prop para avisar al padre cuando se añada una card
 
@@ -51,13 +58,15 @@ export default function TaskColumn(props){
         texto = text.target.value;
         // console.log('add habilitado');
         // console.log(texto);
-        if ( texto === ''){
+        if ( (texto === '')){
             // console.log('cuadro de texto vacio');
             updateButtonAddEnable(false);
+
         }else{
         // console.log(typeof(texto));
         updateButtonAddEnable(true);
         }
+
     }
 
 
@@ -75,6 +84,33 @@ export default function TaskColumn(props){
     } 
 
 
+
+
+
+
+    const botonMasEventos = () =>{
+       
+        showCreationForm(!isTaskCreation);
+        upDateBotonMas(false);
+      
+
+    }
+
+
+
+    const botonCancelarEventos = (c) => {
+        
+        showCreationForm(false);
+        upDateBotonMas(true);
+        updateButtonAddEnable(false);
+    
+    }
+
+    const botonAddEventos = (a) => {
+        showCreationForm(!isTaskCreation);
+        upDateBotonMas(true);   
+        updateButtonAddEnable(false); 
+    }
 
 
 
@@ -101,7 +137,10 @@ export default function TaskColumn(props){
                     {/* Icono de agregar task */}
                             {/* Cuando se le haga click al boton add, se actuzlizara la creacion del formulario */}
                             {/* Cuando le de a ADD se me mostrara y cuando  le vuelvo a dar a ADD se me quita*/}
-                            <AddIcon className="iconADD" onClick={ () => showCreationForm(!isTaskCreation) }/>
+                            {/* <AddIcon className="iconADD" onClick={ () => showCreationForm(!isTaskCreation) }/> */}
+                          
+                    <AddIcon className={ botonMas ? "iconADD-enable" : "iconADD-disable"} onClick={ botonMasEventos }/>
+                    
             </div>
     
         {/* ----------------------------------------------------------------------------------------------------------------------- */}
@@ -111,22 +150,20 @@ export default function TaskColumn(props){
             {/* Hay que meterle logica de javascript usando llaves */}
             <div className={ isTaskCreation ? '' : 'task__form--hidden' }>
                 <form className="formulario_textArea-cancel-add" onSubmit={handleSubmit}>
+                        
                         {/* Text Area */}
-                        <textarea onChange={enableAddButton} className="area_text" required name="taskName" placeholder="Enter your task"></textarea>
+                        <textarea onChange={enableAddButton} className="area_text" required name="taskName" placeholder="Enter your task" placeholder="escribe aqui"></textarea>
 
                         <div className="buttons_cancel-add">
                                 {/* Boton Add */}
                                     {/* Cuando clique este boton necesito pasarle al padre la informacion de la tarea */}
                                     {/* la funcion de onclick debe de venir del props por que se lo tengo que pasar al padre */}
-                                <button className={ buttonAddEnable ?  "btn_add-enable" : "btn_add-disable" } type="submit" >Add</button>
+                                <button className={ buttonAddEnable ?  "btn_add-enable" : "btn_add-disable" } type="submit" onClick={ botonAddEventos } >Add</button>
 
-                                <button className="btn_cancel" onClick={ () => showCreationForm(!isTaskCreation)} >Cancelar</button>
+                                <button type="reset" className="btn_cancel" onClick={ botonCancelarEventos } >Cancelar</button>
 
                         </div>
                         
-                        
-
-
                 </form>
             </div>
 
@@ -135,14 +172,14 @@ export default function TaskColumn(props){
 
              {/* Aqui debo pintar cada elemento del array de task, los elementos estan ubicados en el componenete BoardContainer */}
              {/* en el array de columnas boardList --> dentro de un elemento de boardLista se encuentra un array de task */}
-             {/* ese array de tasks es lo que debo pintar en la lista ul */}
-            <ul>
+            <div className="list_container">
+                {/* <div className="div_prueba"> */}
 
-                {/* el info que necesita task esta en t */}
-                {/* el status que necesita task me viene de la columna */}
-                {props.info.tasks.map( t => <li key={t.id}><Task info={t} status={props.info.status} selectTaskFromColum={ selectTaskId }  ></Task></li> )}
-            </ul>
-
+                        {/* el info que necesita task esta en t */}
+                        {/* el status que necesita task me viene de la columna */}
+                        {props.info.tasks.map( t =><Task key={t.id} info={t} status={props.info.status} selectTaskFromColum={ selectTaskId }  ></Task>)}
+            </div>
+                {/* </div> */}
 
         </div>
     )
