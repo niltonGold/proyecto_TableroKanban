@@ -4,13 +4,17 @@
 import { useState } from "react";
 import Task from "../task/indesx";
 import './style.css';
+import AddIcon from '@mui/icons-material/Add';
 
 
 // TaskColumn es un hijo, debo recibir la informacion de padre, para recbir informacion del padre uso props
 export default function TaskColumn(props){
     
-    // Me voy a crear una variable de estado para para poder hacer aparecer y desaparecer el formulario mediante el uso de un booleano
+    // Me voy a crear una variable de estado para poder hacer aparecer y desaparecer el formulario mediante el uso de un booleano
     const [ isTaskCreation, showCreationForm ] = useState(false);
+
+    // Me voy a crear una variable de estado para poder hacer habilitar o desabilitar el boton del formulario Add
+    const [ buttonAddEnable, updateButtonAddEnable ] = useState(false);
 
 
     // Funcion del submit del formulario
@@ -32,59 +36,102 @@ export default function TaskColumn(props){
         // de esta manera le digo al padre, en que columna se me ha añadido
         // el index es el indice de la columna, me lo tiene que pasar el padre 
         // para decirle al padre en tal columna se  ha añadido esta tarea
-        props.onTaskCreation(taskName, props.index); 
+        props.onTaskCreation(taskName, props.index);
 
 
-        
+        e.target.taskName.value = ''; // vaciar el textarea
+
     }
 
 
 
 
+    const enableAddButton = (text) => {
+        let texto = ''; 
+        texto = text.target.value;
+        // console.log('add habilitado');
+        // console.log(texto);
+        if ( texto === ''){
+            // console.log('cuadro de texto vacio');
+            updateButtonAddEnable(false);
+        }else{
+        // console.log(typeof(texto));
+        updateButtonAddEnable(true);
+        }
+    }
+
+
+
+
+    function selectTaskId (idtask){
+        // idTask es el id de una tarea
+        // idColumn es el id la columa de la que voy a borrar el task 
+
+        const idColumn = props.index;
+        console.log('desde task colum id del task a borrar: '+idtask);
+        console.log('desde task colum id de la columna donde borrare el task: '+idColumn);
+
+        props.onTaskDelete(idtask, idColumn);
+    } 
+
+
+
+
+
+
+
     return(
-        <div>
+        <div className="columns">
 
             {/* div donde estara la cabecera de las columnas, numero de columna, nombre de la columna y el icono de agregar */}
-            <div> 
-                {/* Cantidad numerica de tasks */}
-                        {/* Numero de tasks los saco de props.info.task.length, es decir voy a sacar la cantidad de taks que hay del */}
-                        {/* componenete boardContainer---> variable boardList --> elemento columna --> atributo task.legth para saber cuantas task tiene el array task */}
-                        <p> { props.info.tasks.length } </p>
+            <div className="column_head"> 
+
+                    <div className="column_container-lengh-nameOfColumn">
+
+                    {/* Cantidad numerica de tasks */}
+                            {/* Numero de tasks los saco de props.info.task.length, es decir voy a sacar la cantidad de taks que hay del */}
+                            {/* componenete boardContainer---> variable boardList --> elemento columna --> atributo task.legth para saber cuantas task tiene el array task */}
+                            <p> { props.info.tasks.length } </p>
 
 
-                {/* Nombre de la columna */}
-                        {/*  */}
-                        <p> { props.info.name } </p>
+                    {/* Nombre de la columna */}
+                            <p> { props.info.name } </p>
+                    </div>
 
-
-                {/* Icono de agregar task */}
-                        {/* Cuando se le haga click al boton add, se actuzlizara la creacion del formulario */}
-                        {/* Cuando le de a ADD se me mostrara y cuando  le vuelvo a dar a ADD se me quita*/}
-                        <i onClick={ () => showCreationForm(!isTaskCreation) }>Add</i>
+                    {/* Icono de agregar task */}
+                            {/* Cuando se le haga click al boton add, se actuzlizara la creacion del formulario */}
+                            {/* Cuando le de a ADD se me mostrara y cuando  le vuelvo a dar a ADD se me quita*/}
+                            <AddIcon className="iconADD" onClick={ () => showCreationForm(!isTaskCreation) }/>
             </div>
     
         {/* ----------------------------------------------------------------------------------------------------------------------- */}
 
-            {/* div del formulario */}
+            {/* FORMULARIO*/}
 
             {/* Hay que meterle logica de javascript usando llaves */}
             <div className={ isTaskCreation ? '' : 'task__form--hidden' }>
-                <form onSubmit={handleSubmit}>
+                <form className="formulario_textArea-cancel-add" onSubmit={handleSubmit}>
                         {/* Text Area */}
-                        <textarea required name="taskName" placeholder="Enter your task"></textarea>
+                        <textarea onChange={enableAddButton} className="area_text" required name="taskName" placeholder="Enter your task"></textarea>
 
-                        {/* Boton Add */}
-                            {/* Cuando clique este boton necesito pasarle al padre la informacion de la tarea */}
-                            {/* la funcion de onclick debe de venir del props por que se lo tengo que pasar al padre */}
-                        <button type="submit" >Add</button>
+                        <div className="buttons_cancel-add">
+                                {/* Boton Add */}
+                                    {/* Cuando clique este boton necesito pasarle al padre la informacion de la tarea */}
+                                    {/* la funcion de onclick debe de venir del props por que se lo tengo que pasar al padre */}
+                                <button className={ buttonAddEnable ?  "btn_add-enable" : "btn_add-disable" } type="submit" >Add</button>
+
+                                <button className="btn_cancel" onClick={ () => showCreationForm(!isTaskCreation)} >Cancelar</button>
+
+                        </div>
+                        
+                        
+
+
                 </form>
-
-                {/* Boton Cancel */}
-                <button onClick={ () => showCreationForm(!isTaskCreation)} >Cancelar</button>
             </div>
 
         {/* ----------------------------------------------------------------------------------------------------------------------- */}
-            {/* Listado de las tasks que hay */}
+            {/* LISTA DE TASKS */}
 
              {/* Aqui debo pintar cada elemento del array de task, los elementos estan ubicados en el componenete BoardContainer */}
              {/* en el array de columnas boardList --> dentro de un elemento de boardLista se encuentra un array de task */}
@@ -93,7 +140,7 @@ export default function TaskColumn(props){
 
                 {/* el info que necesita task esta en t */}
                 {/* el status que necesita task me viene de la columna */}
-                {props.info.tasks.map( t => <li key={t.id}><Task info={t} status={props.info.status}></Task></li> )}
+                {props.info.tasks.map( t => <li key={t.id}><Task info={t} status={props.info.status} selectTaskFromColum={ selectTaskId }  ></Task></li> )}
             </ul>
 
 

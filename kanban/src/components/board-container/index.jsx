@@ -1,7 +1,17 @@
 import { useState } from "react";
 import TaskColumn from "../tasks-column"; // Estilo de las columnas del boardKist
 import './style.css';
+import * as React from 'react';
 
+
+
+import Paper from '@mui/material/Paper';
+import InputBase from '@mui/material/InputBase';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import MenuIcon from '@mui/icons-material/Menu';
+import SearchIcon from '@mui/icons-material/Search';
+import DirectionsIcon from '@mui/icons-material/Directions';
 
 
 // Esta es una constante que ayudara a iniciilzar el boacList
@@ -33,6 +43,17 @@ const initialBoard = [
 ];
 
 
+// forma de la fecha 
+
+let date = new Date();
+
+let day = date.getDay();
+
+let mes = date.toLocaleString('default', { month: 'short' });
+let month  = mes.replace(/^\w/, (c) => c.toUpperCase());
+
+console.log(month);
+console.log(day);
 
 export default function BoardContainer(){
 
@@ -81,6 +102,61 @@ export default function BoardContainer(){
 
 
 
+
+
+
+
+    const deleteTask = (idtask, idColumn)=>{
+    
+        console.log('desde board container el id del task a borrar: ' + idtask );
+
+        console.log('desde board container el id de la columna de la que borrare al task: ' + idColumn );
+
+        console.log(boardList[idColumn]);
+
+        console.log( 'delete task: '+ boardList[idColumn].tasks[0].id );
+
+        const arraytasks = boardList[idColumn].tasks;
+        
+        console.log('array de task: '+arraytasks);
+
+        arraytasks.forEach( e => console.log(e.id) );
+
+        // const newColumn = boardList[idColumn];
+        
+        const indexTaskToDelete = boardList[idColumn].tasks.findIndex( (e) => e.id === idtask  );
+
+        console.log('index de task a borrar de column: '+indexTaskToDelete);
+
+        console.log('task sin borrar: ' + JSON.stringify(boardList[idColumn].tasks))
+
+        boardList[idColumn].tasks.splice(indexTaskToDelete,1);
+
+        console.log('task borrado: '+  JSON.stringify(boardList[idColumn].tasks));
+
+        boardList.forEach( e => console.log(e) )
+        
+        updateBoard([...boardList]);
+
+    
+
+       
+    
+    }
+
+
+
+
+// formtato de fecha
+
+
+
+
+
+
+
+
+
     // El filterTask es una funcion que le entra el evento,  hay que hacer un foreach
     const filterTask = (e) => {
         // Tengo que recorrer las columnas, y tengo que decir que la columna sea igual un filter de las columnas
@@ -92,7 +168,6 @@ export default function BoardContainer(){
         })
 
         // ahora necesito actualizar el boardLista para que se repinte
-       
         updateBoard(filteredArray);
     }
 
@@ -100,16 +175,57 @@ export default function BoardContainer(){
     return(
         <main> 
             
+            <section className="version_updated_search__container">
 
-            {/* Seccion 1 de la parte de arriba del board container */}
-            <section>
-                <div>
-                    <h1>Version 1.0</h1>
-                    <p>Updated on  ---Algo---</p>
-                </div>
-                {/* En el input voy a definir una funcion filterTask para realizar el filtro de tasks */}
-                <input onChange={filterTask} type="text" placeholder="busca por aqui"></input>
+                {/* Seccion 1 de la parte de arriba del board container */}
+                <section className="version10_updatedOnDate__container">
+                        <div className="text_version10">Version 1.0</div>
+                        <div className="texto_date">Updated on {day} {month} </div>
+                </section>
+
+                <section className="search_container">
+                    {/* En el input voy a definir una funcion filterTask para realizar el filtro de tasks */}
+                    {/* <input onChange={filterTask} type="text" placeholder="busca por aqui"></input> */}
+
+                    <Paper component="form" sx={{ height:'25px' , p: '1px 2px', display: 'flex', alignItems: 'center', width: 300 }}  >
+                            
+
+                        {/* <IconButton sx={{ p: '10px' }} aria-label="menu">
+                            <MenuIcon />
+                        </IconButton> */}
+
+                        <IconButton type="submit" sx={{ p: '10px' }} aria-label="search">
+                            <SearchIcon />
+                        </IconButton>
+
+                        <InputBase onChange={filterTask}  sx={{ ml: 1, flex: 1 }}  placeholder="Filter cards"  inputProps={{ 'aria-label': 'search google maps' }} />
+                        
+
+                        {/* <IconButton type="submit" sx={{ p: '10px' }} aria-label="search">
+                            <SearchIcon />
+                        </IconButton> */}
+
+
+                        <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
+
+
+                        {/* <IconButton color="primary" sx={{ p: '10px' }} aria-label="directions">
+                            <DirectionsIcon />
+                        </IconButton> */}
+
+
+                    </Paper>
+
+
+
+
+
+
+
+                </section>    
+                
             </section>
+
 
 
             {/* Seccion 2 done estara el array columnas 'boarList' */}
@@ -118,10 +234,9 @@ export default function BoardContainer(){
                     {/* le paso la informacion de info */}
                     {/* la informacion del status me viene de la columna */}
                         {/* El padre debe añadir dos props, el index que lo saca del index del map y luego el onTaskCreation */}
-                    { boardList.map( (c,i) =>  <TaskColumn key={i} className="column__container" index={i} onTaskCreation={createTask} info={c}></TaskColumn> ) }
+                    { boardList.map( (c,i) =>  <TaskColumn key={i} className="column__container" index={i} onTaskCreation={createTask} onTaskDelete={deleteTask} info={c}></TaskColumn> ) }
             </section>
-
-
+            
 
         </main>
     )
