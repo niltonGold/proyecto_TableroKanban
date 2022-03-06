@@ -3,7 +3,8 @@ import TaskColumn from "../tasks-column"; // Estilo de las columnas del boardKis
 import './style.css';
 import * as React from 'react';
 
-
+import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
+// import Card from '../card'
 
 import Paper from '@mui/material/Paper';
 import InputBase from '@mui/material/InputBase';
@@ -14,12 +15,16 @@ import SearchIcon from '@mui/icons-material/Search';
 import DirectionsIcon from '@mui/icons-material/Directions';
 
 
+import { v4 as uuidv4 } from 'uuid'
+
+
 // Esta es una constante que ayudara a iniciilzar el boacList
 // Es una array de columnas, seran 3 columnas
 const initialBoard = [
 
     // Columna 1 TO DO
     {
+        id: uuidv4(),
         name: 'To do',
         status: 'TODO',
         showClearAll: false, // el showClearAll eliminiará todos los cards de la columna
@@ -27,6 +32,7 @@ const initialBoard = [
     },
     // Columna 2 INPROGRES 
     {
+        id: uuidv4(),
         name: 'In progress',
         status: 'INPROGRESS',
         showClearAll: false, // el showClearAll eliminiará todos los cards de la columna
@@ -34,6 +40,7 @@ const initialBoard = [
     },
     // Columna 1 DONE
     {
+        id: uuidv4(),
         name: 'Done',
         status: 'DONE',
         showClearAll: true, // el showClearAll eliminiará todos los cards de la columna
@@ -56,6 +63,43 @@ console.log(month);
 console.log(day);
 
 export default function BoardContainer(){
+
+    
+
+
+    // const [data, setData] = useState(initialBoard);
+
+    const onDragEnd = result => {
+        if (!result.destination) return
+        const { source, destination } = result
+
+        if (source.droppableId !== destination.droppableId) {
+            const sourceColIndex = boardList.findIndex(e => e.id === source.droppableId)
+            const destinationColIndex = boardList.findIndex(e => e.id === destination.droppableId)
+
+            const sourceCol = boardList[sourceColIndex]
+            const destinationCol = boardList[destinationColIndex]
+
+            const sourceTask = [...sourceCol.tasks]
+            const destinationTask = [...destinationCol.tasks]
+
+            const [removed] = sourceTask.splice(source.index, 1)
+            destinationTask.splice(destination.index, 0, removed)
+
+            boardList[sourceColIndex].tasks = sourceTask
+            boardList[destinationColIndex].tasks = destinationTask
+
+            updateBoard(boardList)
+        }
+    }
+
+
+
+
+
+
+
+
 
     // Crear una constante para poder hacer un filtra y pueda mantener la informacion original
     const [originalBoard, updateOriginalBoard] = useState(initialBoard); 
@@ -90,7 +134,8 @@ export default function BoardContainer(){
             creationDate: new Date(),
 
             // debo tener un counter para el id
-            id: newCounter
+            id: newCounter,
+            idDropAndDrag: uuidv4()
         };
 
         // luego de crear la tarea, debo meterlo en el array de la columna i
@@ -227,15 +272,44 @@ export default function BoardContainer(){
 
 
 
+
+
+<DragDropContext onDragEnd={onDragEnd}>
+
             {/* Seccion 2 done estara el array columnas 'boarList' */}
             <section className="columns__container">
                     {/* Aqui debo pintar cada elemento del array de columnas, la forma en la que se pintara cada elemento de la columna se definira en el componente 'taks-column' */}
                     {/* le paso la informacion de info */}
                     {/* la informacion del status me viene de la columna */}
                         {/* El padre debe añadir dos props, el index que lo saca del index del map y luego el onTaskCreation */}
-                    { boardList.map( (c,i) =>  <TaskColumn key={i} className="column__container" index={i} onTaskCreation={createTask} onTaskDelete={deleteTask} info={c}></TaskColumn> ) }
-            </section>
+                    {/* { boardList.map( (c,i) =>  <TaskColumn key={i} className="column__container" index={i} onTaskCreation={createTask} onTaskDelete={deleteTask} info={c}></TaskColumn> ) } */}
+                    
+                    
+                    
+                    {
+                    
+                    boardList.map( (c,i) => 
+                        
+                        (
+                        
+                       
+
+                            <TaskColumn key={i} llave={c.id} className="column__container" index={i} onTaskCreation={createTask} onTaskDelete={deleteTask} info={c}></TaskColumn> 
+                        
+                        
+                       
+                        
+                        
+                        ) 
+                    
+                    )
+                    
+                    }
             
+            
+            </section>
+
+</DragDropContext>          
 
         </main>
     )
