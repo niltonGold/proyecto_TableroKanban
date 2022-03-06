@@ -1,10 +1,13 @@
 // Estilo a la hora de pintar cada columna
 // todo lo definido en el componente task-column es lo que contendra cada columna
 
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import Task from "../task/indesx";
 import './style.css';
 import AddIcon from '@mui/icons-material/Add';
+import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
+// import Card from '../card';
+import { v4 as uuidv4 } from 'uuid'
 
 
 // TaskColumn es un hijo, debo recibir la informacion de padre, para recbir informacion del padre uso props
@@ -22,6 +25,8 @@ export default function TaskColumn(props){
 
 
     const [ botonAdd, upDateBotonAdd ] = useState(false);
+
+    const [ llave, upDateLlave ] = useState();
 
 
     // Funcion del submit del formulario
@@ -112,16 +117,19 @@ export default function TaskColumn(props){
         updateButtonAddEnable(false); 
     }
 
-
-
+   
 
 
     return(
-        <div className="columns">
+        <Droppable  key={props.llave} droppableId={props.llave} >
+        {(provided) => (
+        <div className="columns" 
+        {...provided.droppableProps}
+        ref={provided.innerRef}>
 
             {/* div donde estara la cabecera de las columnas, numero de columna, nombre de la columna y el icono de agregar */}
             <div className="column_head"> 
-
+           
                     <div className="column_container-lengh-nameOfColumn">
 
                     {/* Cantidad numerica de tasks */}
@@ -152,7 +160,7 @@ export default function TaskColumn(props){
                 <form className="formulario_textArea-cancel-add" onSubmit={handleSubmit}>
                         
                         {/* Text Area */}
-                        <textarea onChange={enableAddButton} className="area_text" required name="taskName" placeholder="Enter your task" placeholder="escribe aqui"></textarea>
+                        <textarea onChange={enableAddButton} className="area_text" required name="taskName" placeholder="Enter your task" ></textarea>
 
                         <div className="buttons_cancel-add">
                                 {/* Boton Add */}
@@ -177,11 +185,37 @@ export default function TaskColumn(props){
 
                         {/* el info que necesita task esta en t */}
                         {/* el status que necesita task me viene de la columna */}
-                        {props.info.tasks.map( t =><Task key={t.id} info={t} status={props.info.status} selectTaskFromColum={ selectTaskId }  ></Task>)}
+
+
+
+
+
+                        {
+
+                            props.info.tasks.map( (t,index) =>
+                            
+                            
+                                        (
+                                          
+                                         <Task key={index} llave={t.idDropAndDrag} index={index} info={t} status={props.info.status} selectTaskFromColum={ selectTaskId }  />
+                                            
+                                       
+                                        
+                                        )
+                                               
+                                         
+                            )
+                                 
+
+                        }
+                        {provided.placeholder}
+
             </div>
                 {/* </div> */}
 
         </div>
+        )}
+        </Droppable>
     )
         // LUEGO DE TODO HAY QUE PASARLE LAS PROPS AL TASK-COLUMN, LAS PROPS DEL TASK COLUMN LAS PASO DESDE EL COMPONENTE
         // BOARD-CONTAINER
