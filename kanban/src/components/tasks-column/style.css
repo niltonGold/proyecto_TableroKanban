@@ -136,11 +136,33 @@
     row-gap: 1rem;
     align-items: center;
     padding: 1rem 0rem 1rem 0rem;
-
     height: 60vh;
-  
-    overflow: auto;
-
-    
+    overflow: auto;   
 }
   
+
+
+/* Boton Clear All */
+.AddIcon-btnClearAll{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0;
+}
+        #iconADD{
+            margin-right: 0;
+        }
+
+        .btn_ClearAll {
+        }
+
+        .btn_ClearAll-hidden{
+            display: none;
+        }
+
+        .btn_ClearAll:hover, .btn_ClearAll:focus, .btn_ClearAll:active{
+            cursor: pointer;
+            box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.631);
+            -webkit-transform: scale(1.1);
+            transform: scale(1.1);
+        }
