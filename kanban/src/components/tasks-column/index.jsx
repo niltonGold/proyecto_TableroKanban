@@ -1,116 +1,97 @@
 // Estilo a la hora de pintar cada columna
 // todo lo definido en el componente task-column es lo que contendra cada columna
 
-import { Fragment, useState } from "react";
+import { useEffect, useState } from "react";
 import Task from "../task/indesx";
 import './style.css';
 import AddIcon from '@mui/icons-material/Add';
-import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
-// import Card from '../card';
-import { v4 as uuidv4 } from 'uuid'
+import { Droppable } from 'react-beautiful-dnd';
 
 
-// TaskColumn es un hijo, debo recibir la informacion de padre, para recbir informacion del padre uso props
+// TaskColumn es un hijo, debo recibir la informacion del padre, para recbir informacion del padre uso props
 export default function TaskColumn(props){
     
+
     // Me voy a crear una variable de estado para poder hacer aparecer y desaparecer el formulario mediante el uso de un booleano
     const [ isTaskCreation, showCreationForm ] = useState(false);
+
 
     // Me voy a crear una variable de estado para poder hacer habilitar o desabilitar el boton del formulario Add
     const [ buttonAddEnable, updateButtonAddEnable ] = useState(false);
 
 
+    // Constante para poder gestion el boton del simbolo mas
     const [ botonMas, upDateBotonMas ] = useState(true);
-
-
-
-    const [ botonAdd, upDateBotonAdd ] = useState(false);
-
-    const [ llave, upDateLlave ] = useState();
 
 
     // Funcion del submit del formulario
     const handleSubmit = (e) => {
-
-        // Sirve para evitar que la pantalla se refresque
+        // Sirve para que el formulario se gestione correctamente
         e.preventDefault(); 
 
         // Debo obtener el valor de la task
         const taskName = e.target.taskName.value;
-        console.log(taskName);
+
         // Llamo al evento onTaskCreation
-        // Hace falta una prop para avisar al padre cuando se añada una card
+        // Hace falta una prop para mandarle informacion del hijo al padre
+        // Para poder agregar una task en una determinada columna, necesito el indice de la columna
+        // el indice la columna me lo pasa el padre, en este caso es board-container
 
-        // Necesito una prop que es el id del array de columnas para saber que cuando se me llame al ontaskCreation yo tengo que 
-        // actualizar las tasks de la columna que se ha clicado 
-
-        // el indice de la columna me lo tiene que pasar el padre
-        // de esta manera le digo al padre, en que columna se me ha añadido
-        // el index es el indice de la columna, me lo tiene que pasar el padre 
-        // para decirle al padre en tal columna se  ha añadido esta tarea
-        props.onTaskCreation(taskName, props.index);
-
-
+        // taskName .- Es el contenido de la task
+        // indexColumn .- Es el index de la columna que me ayuda a identificar la columan donde agregare la task
+        
+        // El index de la columna me lo pasa el padre "board-container" y luego le paso el texto de la task del hijo al padre
+        // mediante la prop ontaskCreation, los argumentos taskName y props.indexColumn me ayudaran a ejecutar la funcion 
+        // onTaskCreation en el padre "board-container"
+        props.onTaskCreation(taskName, props.indexColumn);
         e.target.taskName.value = ''; // vaciar el textarea
-
     }
 
 
+    // Arrow function que borrará todos los task de una columna
+    const deleteAllTasks = () => {
+        props.onTasksDeleteAll(props.indexColumn);
+    }
 
 
+    // Arrow function que me ayudara a gestionar si el boton ADD esta disponible o no
     const enableAddButton = (text) => {
         let texto = ''; 
         texto = text.target.value;
-        // console.log('add habilitado');
-        // console.log(texto);
         if ( (texto === '')){
-            // console.log('cuadro de texto vacio');
-            updateButtonAddEnable(false);
-
+            updateButtonAddEnable(false); // En false el boton ADD no esta disponible
         }else{
-        // console.log(typeof(texto));
-        updateButtonAddEnable(true);
+            updateButtonAddEnable(true); // En true el boton ADD si esta disponible
         }
-
     }
 
 
-
-
+    // Funcion que me ayudara a borrar una task de una determinada columna
     function selectTaskId (idtask){
-        // idTask es el id de una tarea
-        // idColumn es el id la columa de la que voy a borrar el task 
 
-        const idColumn = props.index;
-        console.log('desde task colum id del task a borrar: '+idtask);
-        console.log('desde task colum id de la columna donde borrare el task: '+idColumn);
-
+        // idTask .- Es el id de una determinada task
+        // idColumn .- Es el id de una determinada columna de la que voy a borrar un determinado task
+        const idColumn = props.indexColumn;
         props.onTaskDelete(idtask, idColumn);
     } 
 
 
-
-
-
-
+    // Funcion que me ayudara a gestionar el icono +
     const botonMasEventos = () =>{
-       
-        showCreationForm(!isTaskCreation);
-        upDateBotonMas(false);
-      
-
+        showCreationForm(!isTaskCreation); // Me ayuda a mostrar u ocultar el formulario
+        upDateBotonMas(false); // Oculta el boton del icono +
     }
 
 
-
-    const botonCancelarEventos = (c) => {
-        
+    // Funcion que me ayudara gestionar el botón cancelar
+    const botonCancelarEventos = (c) => { 
         showCreationForm(false);
         upDateBotonMas(true);
         updateButtonAddEnable(false);
-    
     }
 
+
+    // Funcion para gestionar el boton ADD
     const botonAddEventos = (a) => {
         showCreationForm(!isTaskCreation);
         upDateBotonMas(true);   
@@ -120,103 +101,98 @@ export default function TaskColumn(props){
    
 
 
+
     return(
         <Droppable  key={props.llave} droppableId={props.llave} >
-        {(provided) => (
-        <div className="columns" 
-        {...provided.droppableProps}
-        ref={provided.innerRef}>
 
-            {/* div donde estara la cabecera de las columnas, numero de columna, nombre de la columna y el icono de agregar */}
-            <div className="column_head"> 
-           
-                    <div className="column_container-lengh-nameOfColumn">
+            {
+                
+                (provided) =>  (
 
-                    {/* Cantidad numerica de tasks */}
-                            {/* Numero de tasks los saco de props.info.task.length, es decir voy a sacar la cantidad de taks que hay del */}
-                            {/* componenete boardContainer---> variable boardList --> elemento columna --> atributo task.legth para saber cuantas task tiene el array task */}
-                            <p> { props.info.tasks.length } </p>
+                <div className="columns" {...provided.droppableProps} ref={provided.innerRef} >
 
-
-                    {/* Nombre de la columna */}
-                            <p> { props.info.name } </p>
-                    </div>
-
-                    {/* Icono de agregar task */}
-                            {/* Cuando se le haga click al boton add, se actuzlizara la creacion del formulario */}
-                            {/* Cuando le de a ADD se me mostrara y cuando  le vuelvo a dar a ADD se me quita*/}
-                            {/* <AddIcon className="iconADD" onClick={ () => showCreationForm(!isTaskCreation) }/> */}
-                          
-                    <AddIcon className={ botonMas ? "iconADD-enable" : "iconADD-disable"} onClick={ botonMasEventos }/>
-                    
-            </div>
-    
-        {/* ----------------------------------------------------------------------------------------------------------------------- */}
-
-            {/* FORMULARIO*/}
-
-            {/* Hay que meterle logica de javascript usando llaves */}
-            <div className={ isTaskCreation ? '' : 'task__form--hidden' }>
-                <form className="formulario_textArea-cancel-add" onSubmit={handleSubmit}>
+                            <div className="column_head"> 
                         
-                        {/* Text Area */}
-                        <textarea onChange={enableAddButton} className="area_text" required name="taskName" placeholder="Enter your task" ></textarea>
+                                    <div className="column_container-lengh-nameOfColumn">
 
-                        <div className="buttons_cancel-add">
-                                {/* Boton Add */}
-                                    {/* Cuando clique este boton necesito pasarle al padre la informacion de la tarea */}
-                                    {/* la funcion de onclick debe de venir del props por que se lo tengo que pasar al padre */}
-                                <button className={ buttonAddEnable ?  "btn_add-enable" : "btn_add-disable" } type="submit" onClick={ botonAddEventos } >Add</button>
+                                            {/* infoColumn es la informacion de la columna y me lo pasa el padre "board-container" */}
+                                            <p> { props.infoColumn.tasks.length } </p>
 
-                                <button type="reset" className="btn_cancel" onClick={ botonCancelarEventos } >Cancelar</button>
+                                            <p> { props.infoColumn.name } </p>
 
-                        </div>
-                        
-                </form>
-            </div>
-
-        {/* ----------------------------------------------------------------------------------------------------------------------- */}
-            {/* LISTA DE TASKS */}
-
-             {/* Aqui debo pintar cada elemento del array de task, los elementos estan ubicados en el componenete BoardContainer */}
-             {/* en el array de columnas boardList --> dentro de un elemento de boardLista se encuentra un array de task */}
-            <div className="list_container">
-                {/* <div className="div_prueba"> */}
-
-                        {/* el info que necesita task esta en t */}
-                        {/* el status que necesita task me viene de la columna */}
+                                    </div>
 
 
+                                    <div className="AddIcon-btnClearAll">   
 
+                                            <AddIcon id={(props.infoColumn.name === 'Done') ? 'iconADD' : ''} className={ botonMas ? "iconADD-enable" : "iconADD-disable"} onClick={ botonMasEventos }/>
 
+                                            <button type="button" className={ (props.infoColumn.name === 'Done') ? 'btn_ClearAll' : 'btn_ClearAll-hidden' } onClick={ deleteAllTasks } >Clear All</button>
 
-                        {
+                                    </div>
 
-                            props.info.tasks.map( (t,index) =>
-                            
-                            
-                                        (
-                                          
-                                         <Task key={index} llave={t.idDropAndDrag} index={index} info={t} status={props.info.status} selectTaskFromColum={ selectTaskId }  />
-                                            
-                                       
+                            </div>
+                
+                            {/* ----------------------------------------------------------------------------------------------------------------------- */}
+
+                            {/* FORMULARIO*/}
+
+                            <div className={ isTaskCreation ? '' : 'task__form--hidden' }>
+
+                                <form className="formulario_textArea-cancel-add" onSubmit={handleSubmit}>
                                         
-                                        )
-                                               
-                                         
-                            )
-                                 
+                                        <textarea onChange={enableAddButton} className="area_text" required name="taskName" placeholder="Enter your task" ></textarea>
 
-                        }
-                        {provided.placeholder}
+                                        <div className="buttons_cancel-add">
 
-            </div>
-                {/* </div> */}
+                                                <button className={ buttonAddEnable ?  "btn_add-enable" : "btn_add-disable" } type="submit" onClick={ botonAddEventos } >Add</button>
 
-        </div>
-        )}
+                                                <button type="reset" className="btn_cancel" onClick={ botonCancelarEventos } >Cancelar</button>
+
+                                        </div>
+                                        
+                                </form>
+
+                            </div>
+
+                            {/* ----------------------------------------------------------------------------------------------------------------------- */}
+
+                            {/* LISTA DE TASKS */}
+
+                            <div className="list_container">
+
+                                        {
+
+                                            props.infoColumn.tasks.map( (task,index) =>
+                                            
+                                                        (
+                                                        
+                                                            <Task 
+                                                            key={index} 
+                                                            idForDraggable={task.idDropAndDrag} 
+                                                            index={index} 
+                                                            infoTask={task} 
+                                                            status={props.infoColumn.status} 
+                                                            selectTaskFromColum={ selectTaskId }  />
+                                                            
+                                                        )
+                                                                   
+                                                )
+                                                
+                                        }
+
+                                        {provided.placeholder}
+
+                            </div>
+
+                </div>
+
+                )
+
+            }
+
         </Droppable>
+        
     )
-        // LUEGO DE TODO HAY QUE PASARLE LAS PROPS AL TASK-COLUMN, LAS PROPS DEL TASK COLUMN LAS PASO DESDE EL COMPONENTE
-        // BOARD-CONTAINER
+
 }

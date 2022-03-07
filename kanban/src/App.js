@@ -3,7 +3,8 @@ import KanbanPage from './pages/kanban-page';
 
 function App() {
   return (
-    <KanbanPage></KanbanPage>
+
+      <KanbanPage></KanbanPage>
     
     );
 }
