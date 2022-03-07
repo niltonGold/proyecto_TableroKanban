@@ -37,7 +37,7 @@
                             word-break: break-all;/* evita que el texto se salga del la caja que lo contiene */
                         } 
                         .date{
-                            font-size: xx-small;
+                            /* font-size: xx-small; */
                         }
 
     .borrar-container{
