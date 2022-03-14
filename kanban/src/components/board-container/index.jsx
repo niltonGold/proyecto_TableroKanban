@@ -52,7 +52,6 @@ let month  = mes.replace(/^\w/, (c) => c.toUpperCase());
 
 export default function BoardContainer(){
 
-
     // Arrow function del drag and drop
     const onDragEnd = result => {
         
@@ -166,7 +165,6 @@ export default function BoardContainer(){
     }
     
     
-
 
     return(
         <main> 

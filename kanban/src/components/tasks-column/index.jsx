@@ -1,7 +1,7 @@
 // Estilo a la hora de pintar cada columna
 // todo lo definido en el componente task-column es lo que contendra cada columna
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Task from "../task/indesx";
 import './style.css';
 import AddIcon from '@mui/icons-material/Add';
